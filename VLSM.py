@@ -18,9 +18,11 @@ class VLSM(object):
 		elif tipoIP is 'B':
 			rango = 16
 			bitsex = 2
-		elif tipoIP is 'C':
+		elif tipoIP is 'A':
 			rango = 24
+			bitsex = 2
 		else:
+			print "Oh rayos! add_deptos_libres"
 			exit(1)
 
 		#Determina numero de hosts libres
@@ -96,9 +98,6 @@ class VLSM(object):
 			for d in self.deptos:
 				bits_host = d['bits_host']
 
-				if bits_host < 2:
-					continue
-
 				if bits_host > 8:
 					bits_octeto1 = bits_host - 8
 					bits_octeto2 = 8
@@ -147,13 +146,77 @@ class VLSM(object):
 			ultimo_bc_2 = '00000000'
 			ultimo_bc_3 = '00000000'
 			for d in self.deptos:
-				pass
+				bits_host = d['bits_host']
+
+				if bits_host > 16:
+					bits_octeto3 = bits_host - 16
+					bits_octeto2 = 8
+					bits_octeto1 = 8
+				elif bits_host > 8:
+					bits_octeto1 = 0
+					bits_octeto2 = bits_host - 8
+					bits_octeto3 = 8
+				else:
+					bits_octeto1 = 0
+					bits_octeto2 = 0
+					bits_octeto3 = bits_host
 				
-				
-				print " %s.%s.%s" % (int(ultimo_bc_1,2),int(ultimo_bc_2,2),int(ultimo_bc_3,2),)
+				if bits_octeto1 > 0:
+					porcion_red_1 = ultimo_bc_1[:-bits_octeto1]
+					porcion_broadcast_1 = ultimo_bc_1[:-bits_octeto1]
+				else:
+					porcion_red_1 = ultimo_bc_1
+					porcion_broadcast_1 = ultimo_bc_1
+
+				if bits_octeto2 > 0:
+					porcion_red_2 = ultimo_bc_2[:-bits_octeto2]
+					porcion_broadcast_2 = ultimo_bc_2[:-bits_octeto2]
+				else:
+					porcion_red_2 = ultimo_bc_2
+					porcion_broadcast_2 = ultimo_bc_2
+
+				porcion_red_3 = ultimo_bc_3[:-bits_octeto3]
+				porcion_broadcast_3 = ultimo_bc_3[:-bits_octeto3]
+
+
+				for bit in range(0,bits_octeto1):
+					porcion_red_1 += '0'
+					porcion_broadcast_1 += '1'
+
+				for bit in range(0,bits_octeto2):
+					porcion_red_2 += '0'
+					porcion_broadcast_2 += '1'
+
+				for bit in range(0,bits_octeto3):
+					porcion_red_3 += '0'
+					porcion_broadcast_3 += '1'
+
+
+				ultimo_bc_1 = int(porcion_broadcast_1,2)
+				ultimo_bc_2 = int(porcion_broadcast_2,2)
+				ultimo_bc_3 = int(porcion_broadcast_3,2)
+
+				ultimo_bc_1 += 1
+				if ultimo_bc_1 > 255:
+					ultimo_bc_1 = 0
+					ultimo_bc_2 += 1
+					if ultimo_bc_2 > 255:
+						ultimo_bc_2 = 0
+						ultimo_bc_3 += 1 
+
+				d['red'] = (self.ip).getOctetos(1) + '.' + str(int(porcion_red_1,2)) + '.' + str(int(porcion_red_2,2)) + '.' + str(int(porcion_red_3,2))
+				d['broadcast'] = (self.ip).getOctetos(1) + '.' + str(int(porcion_broadcast_1,2)) + '.' + str(int(porcion_broadcast_2,2)) + '.' + str(int(porcion_broadcast_3,2))
+				d['msr'] = MSR(d['bits_host'],(self.ip).getTipo())
+
+				ultimo_bc_1 = bin(ultimo_bc_1)
+				ultimo_bc_2 = bin(ultimo_bc_2)
+				ultimo_bc_3 = bin(ultimo_bc_3)
+
+				print " %d.%d.%d" % (int(str(ultimo_bc_1),2),int(str(ultimo_bc_2),2),int(str(ultimo_bc_3),2),)
 		#Calcula para ... ¿? No sé, seguramente un error
 		else:
-			pass
+			print "Oh rayos! calcula: if = ? :"
+			exit(1)
 
 		#Despues de calcular imprime la tabla
 		self.imprimir()

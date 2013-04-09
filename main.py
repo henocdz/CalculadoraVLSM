@@ -20,7 +20,7 @@ V  = VLSM(deptos,ip)
 #IP valida para numero de hosts dados
 Vvalido = V.validar()
 #Si el numero de hosts excede el valor permitido
-if Vvalido['valid'] is False:
+while Vvalido['valid'] is False:
 	clear()
 	print 'La IP no es valida para el numero de hosts, se recomienda IP de clase: ' +  Vvalido['ip_clase']
 
@@ -40,9 +40,9 @@ if Vvalido['valid'] is False:
 	#Cambia la IP en el motor de VLSM
 	V.setIP(ip)
 	#time.sleep(3)
-else:
-	#La IP soporta el numero de hosts requeridos por el diseño y calcula tabla de VLSM
-	V.calcula()
+
+#La IP soporta el numero de hosts requeridos por el diseño y calcula tabla de VLSM
+V.calcula()
 
 
 

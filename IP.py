@@ -1,5 +1,5 @@
 # -*- encoding:utf-8 -*-
-
+import time
 class IP(object):
 	"""Define un objeto IP con metodos utilizados en otras clases"""
 	def __init__(self,ip='0.0.0.0'):
@@ -43,6 +43,8 @@ class IP(object):
 	
 	#Devuelve el numero de host que soporta el tipo de clasificación que es la IP
 	def getHosts(self):
+		#time.sleep(3)
+		#!Warning
 		return int(self.clasificacion[self.tipo]['hosts'])
 
 	#Comprueba que los host totales necesarios para este cálculo 'quepan' en el tipo de IP
