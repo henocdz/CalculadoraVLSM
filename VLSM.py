@@ -57,7 +57,9 @@ class VLSM(object):
 	#Comprueba que se pueda realizar la operacion
 	def validar(self):
 		r = (self.ip).hostsDisponibles(self.totalHosts())
-		self.deptos = self.add_deptos_libres(self.deptos)
+
+		if r['valid']:
+			self.deptos = self.add_deptos_libres(self.deptos)
 		return r
 
 	#Calcula el total de Host segundo los requerimientos dados

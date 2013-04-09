@@ -22,7 +22,7 @@ Vvalido = V.validar()
 #Si el numero de hosts excede el valor permitido
 while Vvalido['valid'] is False:
 	clear()
-	print 'La IP no es valida para el numero de hosts, se recomienda IP de clase: ' +  Vvalido['ip_clase']
+	print 'La IP no es valida para el numero de hosts ['+ str(V.totalHosts()) +'], se recomienda IP de clase: ' +  Vvalido['ip_clase']
 
 	while True:
 		cambiar = raw_input('Desea cambiar la IP? [0/1] \t ')
