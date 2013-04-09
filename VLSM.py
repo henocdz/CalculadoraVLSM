@@ -157,7 +157,6 @@ class VLSM(object):
 						flag = False
 						break
 					
-					
 					prev = this
 					pbits = p
 
@@ -172,7 +171,6 @@ class VLSM(object):
 					libres.append(0)
 					libres.append((l - prev))
 
-			print rlibres
 			return rlibres
 
 	#Imprime la 'tabla'
