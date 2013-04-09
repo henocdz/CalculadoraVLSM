@@ -1,5 +1,10 @@
 # -*- encoding:utf-8 -*-
 from IP import IP
+import os
+
+clear = lambda: os.system('cls') #Windows
+# clear = lambda: os.system('cls') #Linux
+
 def MSR(msr,clase):
 	if clase is 'C': #Es clase C
 		bits_sr = msr%8
@@ -51,3 +56,63 @@ def getIP():
 
 		break
 	return ip
+
+def getDeptos():
+	deptos = []
+	num_deptos = 1
+	while True:
+
+		nombre_depto = raw_input("Introduce el nombre de departamento %d : " % num_deptos)
+		numero_hosts = raw_input("Numero de hosts: ")
+
+		#Valida que numero de hosts sea entero positivo
+		try:
+			numero_hosts = int(numero_hosts)
+		except:
+			print "Debes introducir un numero entero"
+			continue
+
+		#Numero de IPs totales necesarias para la subred (incluye direccion de red y broadcast)
+		numero_ips = numero_hosts + 2
+		
+		potencia = 0
+		#Obtiene el numero de bits de host necesarios para soportar el numero de IPs requeridas
+		while potencia >= 0:
+			bits_cercanos = pow(2,potencia)
+			#Si el numero IPs es menor al siguiente valor de la potencia de 2 obtiene bits de hosts
+			if numero_ips <= bits_cercanos:
+				bits = potencia
+				break
+			potencia += 1
+
+		msr = 32 - bits # Notacion abreviada de Mascara de Subreds
+
+		#Guarda el numero departamento con su información
+		deptos.append({
+			'nombre':nombre_depto,
+			'red': '',
+			'broadcast': '',
+			'hosts':numero_hosts,
+			'bits_host':bits,
+			'msr': ''
+		})
+
+		#Contador para entorno gráfico
+		num_deptos += 1
+		
+		#Pregunta si se desea agregar otro departamento
+		while True:
+			continuar = 0
+			try:
+				continuar = int(raw_input("\n\tAgregar otro departamento [0 .. 1]? \t"))
+				break
+			except:
+				print "Opcion no válida"
+
+		clear()
+
+		#Si no se desea agregar, deja de pedir departamentos
+		if continuar is not 1:
+			break
+
+	return deptos

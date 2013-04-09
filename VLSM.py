@@ -2,7 +2,7 @@
 from auxiliares import MSR
 class VLSM(object):
 	"""Genera tabla"""
-	def __init__(self,deptos,num_deptos,ip):
+	def __init__(self,deptos,ip):
 		#Ordena los departamentos de mayor a menos segun el numero de bits de host
 		self.deptos = sorted(deptos, key=lambda k: k['hosts'],reverse = True)
 		self.numero_deptos = len(deptos)
