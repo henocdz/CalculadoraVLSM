@@ -11,6 +11,7 @@ class VLSM(object):
 
 	def add_deptos_libres(self,deptos):
 		tipoIP = (self.ip).getTipo()
+		#Determina el numero maximo de bits de hosts y agrega X cantidad para evitar errores
 		if tipoIP is 'C':
 			rango = 8
 			bitex = 1
@@ -22,16 +23,17 @@ class VLSM(object):
 		else:
 			exit(1)
 
-
+		#Determina numero de hosts libres
 		libres = ((self.ip).getHosts() + bitsex) - self.totalHosts()
-
+		#Calcula subredes libres
 		lbs = self.calculaLibres(libres,rango)
 
 		deptos_libres = []
-
+		#Genera el 'numero' de red libre 'al revés'
 		libre_id = range(1,len(lbs)+1)
 		libre_id.reverse()
 		c = 0
+		#Agrega configuracion basica a cada sred libre
 		for l in lbs:
 			deptos_libres.append({
 				'nombre': 'Libre ' + str(libre_id[c]),
@@ -42,9 +44,9 @@ class VLSM(object):
 				'msr': ''
 			})
 			c += 1
-
+		#Ordena de menor a mayor
 		deptos_libres_sort = sorted(deptos_libres, key=lambda k: k['hosts'],reverse = False)
-
+		#Agrega la subredes y su configuracion basica a 'todos los departamentos'
 		for depto_libre in deptos_libres_sort:
 			deptos.append(depto_libre)
 
@@ -160,37 +162,55 @@ class VLSM(object):
 	def setIP(self,ip):
 		self.ip = ip
 
+	#Devuelve lista con subredes que quedan libres
 	def calculaLibres(self,bitsL,rangoBits):
+		#Lista que contiene numero de hosts que quedan libres
 		libres = [bitsL]
 		rlibres = []
+
+		#Genera potencia maxima  que puede contener a los hosts libres en base a la clase de IP
 		r = range(0,rangoBits)
-
+		#Por cada libre que existra se calcula quien puede contenerlo
 		for l in libres:
-			prev = 255
+			prev = pow(2,rangoBits)
 			flag = False
+			#Por cada potencia de 2 en el rango, basado en el numero máximo de hosts según clase de IP
 			for p in r:
+				#Calcula potencia de 2
 				this = pow(2,p)
-
+				#Si al elevar fue exacto
 				if this == l:
+					#Numero de hosts
 					bits = this
+					#Potencia que contiene al numero de hosts
 					pbits = p
+					#La potencia fue exacta
 					flag = True
 					break
+				#Se ha exedido la potencia que puede contenerlo
 				if this > l:
 					flag = False
 					break
-				
+				#Si no hubo potencia exacta
+				#Se guarda el anterior, es decir uno menor a este
 				prev = this
+				#Se guarda la potencia que genera [prev]
 				pbits = p
 
+			#Si hubo potencia exacta
 			if flag:
+				#En la lista de subredes libres, se agrega numero de hosts y potencia que le pueden contener
 				rlibres.append((bits,pbits))
 				del libres[0]
 			else:
+				#Elimina primer elemento de la lista (por el que se pasa actualmente)
 				del libres[0]
 				
+				#Se guarda la informacion del anterior, pues es obvio que sera una potencia exacta
 				rlibres.append((prev,pbits))
+				#Agrega un 0 (puede ser cualqueir numero), para brincar el paso actual del ciclo
 				libres.append(0)
+				#Se agrega como hosts disponibles sin asignar una potencia cercana a la lista libres
 				libres.append((l - prev))
 
 		#print rlibres
