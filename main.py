@@ -57,7 +57,7 @@ while True:
 		'broadcast': '',
 		'hosts':numero_hosts,
 		'bits_host':bits,
-		'msr': mascara
+		'msr': ''
 	})
 
 	#Contador para entorno gráfico

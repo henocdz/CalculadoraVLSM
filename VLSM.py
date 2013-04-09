@@ -1,4 +1,5 @@
 #-*- encoding:utf-8 -*-
+from auxiliares import MSR
 class VLSM(object):
 	"""Genera tabla"""
 	def __init__(self,deptos,num_deptos,ip):
@@ -62,10 +63,10 @@ class VLSM(object):
 				#Se forman IP's de Red y broadcast
 				d['red'] = (self.ip).getOctetos(3) + '.' + str(int(porcion_red,2))
 				d['broadcast'] = (self.ip).getOctetos(3) + '.' + str(int(porcion_broadcast,2))
+				d['msr'] = MSR(d['bits_host'],(self.ip).getTipo())
 				#Se cambia el último octeto de la última direccion de broadcast asignada
 				ultimo_bc = bin(int(porcion_broadcast,2)+1)
 
-			
 		#Calcula para IP clase B
 		elif tipo_ip is 'B':
 			ultimo_bc_1 = '00000000'
@@ -104,6 +105,7 @@ class VLSM(object):
 
 				d['red'] = (self.ip).getOctetos(2) + '.' + str(int(porcion_red_1,2)) + '.' + str(int(porcion_red_2,2))
 				d['broadcast'] = (self.ip).getOctetos(2) + '.' + str(int(porcion_broadcast_1,2)) + '.' + str(int(porcion_broadcast_2,2))
+				d['msr'] = MSR(d['bits_host'],(self.ip).getTipo())
 
 				ultimo_bc_2 += 1
 
