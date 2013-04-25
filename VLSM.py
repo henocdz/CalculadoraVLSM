@@ -2,7 +2,7 @@
 from auxiliares import MSR
 class VLSM(object):
 	"""Genera tabla"""
-	def __init__(self,deptos,ip):
+	def __init__(self,deptos=None,ip='0.0.0.0'):
 		#Ordena los departamentos de mayor a menos segun el numero de bits de host
 		self.deptos = sorted(deptos, key=lambda k: k['hosts'],reverse = True)
 		self.numero_deptos = len(deptos)
@@ -14,7 +14,7 @@ class VLSM(object):
 		#Determina el numero maximo de bits de hosts y agrega X cantidad para evitar errores
 		if tipoIP is 'C':
 			rango = 8
-			bitex = 1
+			bitsex = 2
 		elif tipoIP is 'B':
 			rango = 16
 			bitsex = 2
@@ -147,28 +147,31 @@ class VLSM(object):
 			ultimo_bc_1 = '00000000'
 			ultimo_bc_2 = '00000000'
 			ultimo_bc_3 = '00000000'
+
 			for d in self.deptos:
 				bits_host = d['bits_host']
 
+				#print ultimo_bc_3 + '.' + ultimo_bc_2 +'.'+ ultimo_bc_1
+				
 				if bits_host > 16:
 					bits_octeto3 = bits_host - 16
 					bits_octeto2 = 8
 					bits_octeto1 = 8
 				elif bits_host > 8:
-					bits_octeto1 = 0
+					bits_octeto3 = 0
 					bits_octeto2 = bits_host - 8
-					bits_octeto3 = 8
+					bits_octeto1 = 8
 				else:
-					bits_octeto1 = 0
+					bits_octeto3 = 0
 					bits_octeto2 = 0
-					bits_octeto3 = bits_host
+					bits_octeto1 = bits_host
 				
-				if bits_octeto1 > 0:
-					porcion_red_1 = ultimo_bc_1[:-bits_octeto1]
-					porcion_broadcast_1 = ultimo_bc_1[:-bits_octeto1]
+				if bits_octeto3 > 0:
+					porcion_red_3 = ultimo_bc_3[:-bits_octeto3]
+					porcion_broadcast_3 = ultimo_bc_3[:-bits_octeto3]
 				else:
-					porcion_red_1 = ultimo_bc_1
-					porcion_broadcast_1 = ultimo_bc_1
+					porcion_red_3 = ultimo_bc_3
+					porcion_broadcast_3 = ultimo_bc_3
 
 				if bits_octeto2 > 0:
 					porcion_red_2 = ultimo_bc_2[:-bits_octeto2]
@@ -177,8 +180,8 @@ class VLSM(object):
 					porcion_red_2 = ultimo_bc_2
 					porcion_broadcast_2 = ultimo_bc_2
 
-				porcion_red_3 = ultimo_bc_3[:-bits_octeto3]
-				porcion_broadcast_3 = ultimo_bc_3[:-bits_octeto3]
+				porcion_red_1 = ultimo_bc_1[:-bits_octeto1]
+				porcion_broadcast_1 = ultimo_bc_1[:-bits_octeto1]
 
 
 				for bit in range(0,bits_octeto1):
@@ -193,28 +196,35 @@ class VLSM(object):
 					porcion_red_3 += '0'
 					porcion_broadcast_3 += '1'
 
-
+				
 				ultimo_bc_1 = int(porcion_broadcast_1,2)
 				ultimo_bc_2 = int(porcion_broadcast_2,2)
-				ultimo_bc_3 = int(porcion_broadcast_3,2)
+				try:
+					ultimo_bc_3 = int(porcion_broadcast_3,2)
+				except:
+					print porcion_broadcast_3
+
+				
 
 				ultimo_bc_1 += 1
 				if ultimo_bc_1 > 255:
 					ultimo_bc_1 = 0
 					ultimo_bc_2 += 1
-					if ultimo_bc_2 > 255:
-						ultimo_bc_2 = 0
-						ultimo_bc_3 += 1 
 
-				d['red'] = (self.ip).getOctetos(1) + '.' + str(int(porcion_red_1,2)) + '.' + str(int(porcion_red_2,2)) + '.' + str(int(porcion_red_3,2))
-				d['broadcast'] = (self.ip).getOctetos(1) + '.' + str(int(porcion_broadcast_1,2)) + '.' + str(int(porcion_broadcast_2,2)) + '.' + str(int(porcion_broadcast_3,2))
+				if ultimo_bc_2 > 255:
+					ultimo_bc_2 = 0
+					#print ultimo_bc_3
+					ultimo_bc_3 += 1 
+
+				d['red'] = (self.ip).getOctetos(1) + '.' + str(int(porcion_red_3,2)) + '.' + str(int(porcion_red_2,2)) + '.' + str(int(porcion_red_1,2))
+				d['broadcast'] = (self.ip).getOctetos(1) + '.' + str(int(porcion_broadcast_3,2)) + '.' + str(int(porcion_broadcast_2,2)) + '.' + str(int(porcion_broadcast_1,2))
 				d['msr'] = MSR(d['bits_host'],(self.ip).getTipo())
 
 				ultimo_bc_1 = bin(ultimo_bc_1)
 				ultimo_bc_2 = bin(ultimo_bc_2)
 				ultimo_bc_3 = bin(ultimo_bc_3)
 
-				print " %d.%d.%d" % (int(str(ultimo_bc_1),2),int(str(ultimo_bc_2),2),int(str(ultimo_bc_3),2),)
+				#print " %d.%d.%d" % (int(str(ultimo_bc_1),2),int(str(ultimo_bc_2),2),int(str(ultimo_bc_3),2),)
 		#Calcula para ... ¿? No sé, seguramente un error
 		else:
 			print "Oh rayos! calcula: if = ? :"
@@ -280,6 +290,29 @@ class VLSM(object):
 
 		#print rlibres
 		return rlibres
+
+	def autoIP(self):
+		pass
+		tH = self.totalHosts()
+		clas = (self.ip).clasificacion.keys()
+		clas.sort()	
+		clas.reverse()
+
+		t = None
+		for c in clas:
+			if tH < (self.ip).clasificacion[c]['hosts']:
+				t = c
+				break
+
+		if t is not None:
+			if t is 'C':
+				return '192.168.1.0'
+			elif t is 'B':
+				return '130.1.0.0'
+			elif t is 'A':
+				return '9.0.0.0'
+			else:
+				return None
 
 	#Imprime la 'tabla'
 	def imprimir(self):

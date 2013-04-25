@@ -3,20 +3,32 @@ import os,time
 from math import pow
 from VLSM import VLSM
 from auxiliares import MSR,getIP,getDeptos
-
+from IP import IP
 #Limpia la pantalla
 clear = lambda: os.system('cls') #Windows
 # clear = lambda: os.system('cls') #Linux
 
 #Obtiene IP valida inicial
-ip = getIP()
+#ip = getIP()
 
 #Obtiene departamentos
 deptos = getDeptos()
 
-####################
+#################r###
+ip = IP()
 
 V  = VLSM(deptos,ip)
+
+ip_s = V.autoIP()
+ip = IP(ip_s)
+
+print ip_s
+
+if ip.validar() is True:
+	V.setIP(ip)
+else:
+	exit()
+
 #IP valida para numero de hosts dados
 Vvalido = V.validar()
 #Si el numero de hosts excede el valor permitido

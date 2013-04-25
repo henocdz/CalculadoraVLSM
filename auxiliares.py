@@ -7,7 +7,7 @@ clear = lambda: os.system('cls') #Windows
 
 def MSR(msr,clase):
 	if clase is 'C': #Es clase C
-		bits_sr = msr%8
+		bits_sr = 8 - msr
 		rango = range(0,8)
 		rango.reverse()
 		rango = rango[:bits_sr]
@@ -16,7 +16,7 @@ def MSR(msr,clase):
 			mascara += pow(2,c)
 		mascara = '255.255.255.' + str(int(mascara))
 	elif clase is 'B':
-		bits_sr = msr - 16
+		bits_sr = 16 - msr
 		octeto1 = 0
 		octeto2 = 0
 
@@ -39,8 +39,43 @@ def MSR(msr,clase):
 			octeto2 += pow(2,bit)
 
 		mascara = '255.255.' +  str(int(octeto1)) + '.' + str(int(octeto2))
+	elif clase is 'A':
+		bits_sr = 24 - msr
+		octeto1 = 0
+		octeto2 = 0
+		octeto3 = 0
+
+		if bits_sr > 16:
+			bits_sr_octeto1 = bits_sr - 16
+			bits_sr_octeto2 = 8
+			bits_sr_octeto3 = 8
+		elif bits_sr > 8:
+			bits_sr_octeto1 = 0
+			bits_sr_octeto2 = bits_sr - 8
+			bits_sr_octeto3 = 8
+		else:
+			bits_sr_octeto1 = 0
+			bits_sr_octeto2 = 0
+			bits_sr_octeto3 = bits_sr
+
+		rango = range(0,8)
+		rango.reverse()
+		rango1 = rango[:bits_sr_octeto1]
+		rango2 = rango[:bits_sr_octeto2]
+		rango3 = rango[:bits_sr_octeto3]
+
+		for bit in rango1:
+			octeto1 += pow(2,bit)
+
+		for bit in rango2:
+			octeto2 += pow(2,bit)
+
+		for bit in rango3:
+			octeto3 += pow(2,bit)
+
+		mascara = '255.' +  str(int(octeto3)) + '.' + str(int(octeto2)) + '.' + str(int(octeto1))
 	else:
-		mascara = '255.0.0.0'
+		mascara = '255.ER.R.OR'
 
 	return mascara
 

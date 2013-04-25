@@ -9,6 +9,12 @@ class IP(object):
 			'B': {'i': '10000000', 'f':'10111111','hosts': pow(2,16) - 2 },
 			'C' : {'i': '11000000','f':'11011111','hosts': pow(2,8) - 2 }
 		}
+		
+		self.clasificacionInvert = {
+			'C' : {'i': '11000000','f':'11011111','hosts': pow(2,8) - 2 },
+			'B': {'i': '10000000', 'f':'10111111','hosts': pow(2,16) - 2 },
+			'A': {'i': '00000000', 'f':'01111111','hosts': pow(2,24) - 2 }
+		}
 
 	#Validar ip dada
 	def validar(self):
